@@ -18,6 +18,8 @@ namespace AuthAPI.Core
         public IResponseStore ResponseStore { get; set; }
 
         public int TokenExpirationMiliseconds { get; set; }
+        public string ClientId { get; set; }
+        public string ClientSecret { get; set; }
 
         public AuthAPIConfiguration()
         {

@@ -45,6 +45,8 @@ namespace AuthAPI.Tests.WebAPI
                      .Returns("123456");
 
             AuthAPIConfiguration.Instance.AuthStore = authStore;
+            AuthAPIConfiguration.Instance.ClientId = "AuthAPI";
+            AuthAPIConfiguration.Instance.ClientSecret = "QiU6bSt3anE2OURfX3IsKlVZen05K1tBLW5AQ1x1d0xIXVZwaGE7Zj83QTc0ZXthVy9aWV9UZ0tUcnRUVEQ6d2JxTEhGOi9fMitBfiNZOS5NXHlyJzNnNSl1VzxNQExkQXtHJEQ+fWElMkMhWUJhLT8kbUFeQERWa310J2N+NkQ=";
 
             config.Services.Replace(typeof(IAssembliesResolver), new ExternalAssemblyResolver());
 

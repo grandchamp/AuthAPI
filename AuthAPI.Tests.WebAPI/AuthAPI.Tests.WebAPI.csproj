@@ -87,6 +87,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="AuthAPIHttpClientHandlerTests.cs" />
     <Compile Include="AuthTests.cs" />
     <Compile Include="Helpers\ExternalAssemblyResolver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

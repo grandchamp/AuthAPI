@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using AuthAPI.Core;
 using AuthAPI.Samples.WebAPI.Models;
 using Newtonsoft.Json;
+using AuthAPI.Core.Handlers;
 
 namespace AuthAPI.Tests.WebAPI
 {
@@ -34,7 +35,7 @@ namespace AuthAPI.Tests.WebAPI
         }
 
         [TestMethod]
-        public async Task ShouldReceive404OnAuthorizeController()
+        public async Task ShouldReceive401OnAuthorizeController()
         {
             var client = new HttpClient();
             var url = string.Concat(_address, "/api/values/5");
@@ -102,7 +103,7 @@ namespace AuthAPI.Tests.WebAPI
         }
 
         [TestMethod]
-        public async Task ShouldReceive404OnDuplicateAuthorizeRequest()
+        public async Task ShouldReceive401OnDuplicateAuthorizeRequest()
         {
             var client = new HttpClient();
 
@@ -250,7 +251,6 @@ namespace AuthAPI.Tests.WebAPI
                 Request = requestPayload
             };
 
-
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("AuthAPI", authHeader.ToAuthorizationHeader("QiU6bSt3anE2OURfX3IsKlVZen05K1tBLW5AQ1x1d0xIXVZwaGE7Zj83QTc0ZXthVy9aWV9UZ0tUcnRUVEQ6d2JxTEhGOi9fMitBfiNZOS5NXHlyJzNnNSl1VzxNQExkQXtHJEQ+fWElMkMhWUJhLT8kbUFeQERWa310J2N+NkQ="));
 
             result = result = await client.PostAsJsonAsync<ValuesModel>(url, valuesModel);
@@ -260,7 +260,7 @@ namespace AuthAPI.Tests.WebAPI
 
         [TestMethod]
         //This is called Z because it should be the last test to run, because it changes the TokenExpirationMiliseconds
-        public async Task ZhouldReceive404OnTokenExpiration()
+        public async Task ZhouldReceive401OnTokenExpiration()
         {
             AuthAPIConfiguration.Instance.TokenExpirationMiliseconds = 1;
 
