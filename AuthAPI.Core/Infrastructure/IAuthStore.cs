@@ -11,6 +11,6 @@ namespace AuthAPI.Core.Infrastructure
     {
         Task<string> GetClientSecretById(string clientId);
         Task<string> GetPasswordByUserName(string userName);
-        ClaimsPrincipal BuildClaimsPrincipalForIdentity(string userName);
+        Task<ClaimsPrincipal> BuildClaimsPrincipalForIdentity(string userName);
     }
 }
