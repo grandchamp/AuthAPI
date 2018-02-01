@@ -1,5 +1,7 @@
 ﻿using AuthAPI.Core.Infrastructure;
 using NSubstitute;
+using System.Security.Claims;
+using System.Security.Principal;
 using System.Threading.Tasks;
 
 namespace AuthAPI.Samples.Mvc.Store
@@ -16,8 +18,13 @@ namespace AuthAPI.Samples.Mvc.Store
             authStore.GetPasswordByUserName(Arg.Any<string>())
                      .Returns("123456");
 
+            authStore.BuildClaimsPrincipalForIdentity(Arg.Any<string>())
+                     .Returns(new ClaimsPrincipal(new GenericPrincipal(new GenericIdentity("test"),new string[] { })));
+
             _authStore = authStore;
         }
+
+        public Task<ClaimsPrincipal> BuildClaimsPrincipalForIdentity(string userName) => _authStore.BuildClaimsPrincipalForIdentity(userName);
 
         public Task<string> GetClientSecretById(string clientId) => _authStore.GetClientSecretById(clientId);
 

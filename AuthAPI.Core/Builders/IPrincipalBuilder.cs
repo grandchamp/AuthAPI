@@ -1,10 +1,11 @@
 ﻿using AuthAPI.Core.Infrastructure.Headers;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace AuthAPI.Core.Builders
 {
     public interface IPrincipalBuilder
     {
-        ClaimsPrincipal BuildPrincipal(AuthHeader authHeader);
+        Task<ClaimsPrincipal> BuildPrincipal(AuthHeader authHeader);
     }
 }

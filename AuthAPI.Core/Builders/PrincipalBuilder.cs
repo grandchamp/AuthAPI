@@ -3,6 +3,7 @@ using AuthAPI.Core.Infrastructure.Headers;
 using Microsoft.Extensions.Options;
 using System.Security.Claims;
 using System.Security.Principal;
+using System.Threading.Tasks;
 
 namespace AuthAPI.Core.Builders
 {
@@ -16,10 +17,10 @@ namespace AuthAPI.Core.Builders
             _authApiConfiguration = authApiConfiguration;
         }
 
-        public ClaimsPrincipal BuildPrincipal(AuthHeader authHeader)
+        public async Task<ClaimsPrincipal> BuildPrincipal(AuthHeader authHeader)
         {
             if (_authApiConfiguration.Value.UseIdentity)
-                return _authStore.BuildClaimsPrincipalForIdentity(authHeader.Request.UserName);
+                return await _authStore.BuildClaimsPrincipalForIdentity(authHeader.Request.UserName);
             else
                 return new GenericPrincipal(new ClaimsIdentity(new GenericIdentity(authHeader.Request.UserName)), new string[] { });
         }

@@ -73,7 +73,7 @@ namespace AuthAPI.Middlewares.Mvc
 
                         await _responseStore.UpdateResponse(newResponse.Identifier, newResponse);
 
-                        return AuthenticateResult.Success(new AuthenticationTicket(_principalBuilder.BuildPrincipal(authHeader),
+                        return AuthenticateResult.Success(new AuthenticationTicket(await _principalBuilder.BuildPrincipal(authHeader),
                                                                                    new AuthenticationProperties(),
                                                                                    Scheme.Name));
                     }
