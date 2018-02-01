@@ -1,50 +1,46 @@
 ﻿using AuthAPI.Core.Infrastructure.Headers;
 using AuthAPI.Core.Infrastructure.RequestStore.Contracts;
-using Newtonsoft.Json;
+using Microsoft.Extensions.Caching.Memory;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Caching;
-using System.Text;
 using System.Threading.Tasks;
-using AuthAPI.Core;
 
 namespace AuthAPI.Core.Infrastructure.RequestStore
 {
     public class MemoryCacheResponseStore : IResponseStore
     {
-        private readonly MemoryCache _cache = MemoryCache.Default;
-
-        public Task<bool> StoreResponse(ResponsePayload response, DateTime expirationDate)
+        private readonly IMemoryCache _cache;
+        public MemoryCacheResponseStore(IMemoryCache cache)
         {
-            var result = _cache.Add(response.Identifier, response.ToStoredResponse(expirationDate), expirationDate);
-
-            return Task.FromResult(result);
+            _cache = cache;
         }
 
-        public Task<bool> UpdateResponse(string identifier, ResponsePayload newResponse)
+        public async Task StoreResponse(ResponsePayload response, DateTime expirationDate)
         {
-            var currentCache = _cache.Remove(identifier);
-
-            var result = false;
-            if (currentCache != null)
+            await _cache.GetOrCreateAsync(response.Identifier, item =>
             {
-                var transformedRequest = (StoredResponse)currentCache;
-                result = _cache.Add(identifier, newResponse.ToStoredResponse(transformedRequest.Expiration), transformedRequest.Expiration);
-            }
+                item.SetAbsoluteExpiration(expirationDate);
 
-            return Task.FromResult(result);
+                return Task.FromResult(response.ToStoredResponse(expirationDate));
+            });
         }
 
-        public Task<StoredResponse> GetResponse(string identifier)
+        public async Task UpdateResponse(string identifier, ResponsePayload newResponse)
         {
-            var currentCache = _cache.Get(identifier);
+            var result = _cache.TryGetValue(identifier, out StoredResponse storedResponse);
 
-            StoredResponse stored = null;
-            if (currentCache != null)
-                stored = (StoredResponse)currentCache;
+            if (result)
+            {
+                _cache.Remove(identifier);
 
-            return Task.FromResult(stored);
+                await _cache.GetOrCreateAsync(identifier, item =>
+                {
+                    item.SetAbsoluteExpiration(storedResponse.Expiration);
+
+                    return Task.FromResult(newResponse.ToStoredResponse(storedResponse.Expiration));
+                });
+            }
         }
+
+        public Task<StoredResponse> GetResponse(string identifier) => Task.FromResult(_cache.Get<StoredResponse>(identifier));
     }
 }

@@ -1,9 +1,6 @@
 ﻿using AuthAPI.Core.Infrastructure.RequestStore.Contracts;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Net.Http.Headers;
 
 namespace AuthAPI.Core.Infrastructure.Headers
 {
@@ -11,21 +8,18 @@ namespace AuthAPI.Core.Infrastructure.Headers
     {
         public DataPayload Data { get; set; }
         public RequestPayload Request { get; set; }
-
-        public bool IsValid { get { return _isValid; } }
-
-        private bool _isValid = false;
-        private IResponseStore _requestStore = AuthAPIConfiguration.Instance.ResponseStore;
+        public bool IsValid { get; private set; }
 
         public AuthHeader() { }
-
-        public AuthHeader(string header)
+        public AuthHeader(string header, IResponseStore responseStore)
         {
             try
             {
                 if (!string.IsNullOrEmpty(header))
                 {
-                    var requestString = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(header.Split(':')[0]));
+                    var parsedHeader = AuthenticationHeaderValue.Parse(header);
+
+                    var requestString = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(parsedHeader.Parameter.Split(':')[0]));
                     var requestParts = requestString.Split('|');
 
                     Request = new RequestPayload
@@ -36,26 +30,30 @@ namespace AuthAPI.Core.Infrastructure.Headers
                         RequestCount = requestParts[3]
                     };
 
-                    var storedResponse = _requestStore.GetResponse(Request.Identifier)
+                    var storedResponse = responseStore.GetResponse(Request.Identifier)
                                                       .GetAwaiter()
                                                       .GetResult();
 
                     if (storedResponse == null)
-                        _isValid = false;
+                    {
+                        IsValid = false;
+                    }
                     else
+                    {
                         if (int.Parse(storedResponse.Response.RequestCount) + 1 != int.Parse(Request.RequestCount))
-                            _isValid = false;
-
-                    _isValid = true;
+                            IsValid = false;
+                        else
+                            IsValid = true;
+                    }
 
                     return;
                 }
 
-                _isValid = false;
+                IsValid = false;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                _isValid = false;
+                IsValid = false;
             }
         }
     }

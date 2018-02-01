@@ -1,10 +1,7 @@
 ﻿using AuthAPI.Core.Infrastructure.Headers;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace AuthAPI.Core
 {
@@ -26,16 +23,13 @@ namespace AuthAPI.Core
 
             using (var hmac = new HMACSHA256(Convert.FromBase64String(clientSecret)))
             {
-                var hash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(sb.ToString()));
+                var hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(sb.ToString()));
                 return Convert.ToBase64String(hash);
             }
         }
 
         public static string ToAuthorizationHeader(this AuthHeader auth, string clientSecret)
         {
-            //var requestString = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(header.Split(':')[0]));
-            //var requestParts = requestString.Split('|');
-
             var requestBase64 = auth.Request.ToAuthorizationHeader();
             var dataHash = auth.ToHMAC(clientSecret);
 
