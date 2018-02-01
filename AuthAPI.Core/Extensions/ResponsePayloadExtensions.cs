@@ -1,10 +1,7 @@
 ﻿using AuthAPI.Core.Infrastructure.Headers;
 using AuthAPI.Core.Infrastructure.RequestStore;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace AuthAPI.Core
 {
@@ -16,12 +13,9 @@ namespace AuthAPI.Core
                             .AppendLine(request.Identifier)
                             .AppendLine(request.RequestCount);
 
-            return Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(sb.ToString()));
+            return Convert.ToBase64String(Encoding.UTF8.GetBytes(sb.ToString()));
         }
 
-        public static StoredResponse ToStoredResponse(this ResponsePayload response, DateTime expirationDate)
-        {
-            return new StoredResponse { Response = response, Expiration = expirationDate };
-        }
+        public static StoredResponse ToStoredResponse(this ResponsePayload response, DateTime expirationDate) => new StoredResponse { Response = response, Expiration = expirationDate };
     }
 }

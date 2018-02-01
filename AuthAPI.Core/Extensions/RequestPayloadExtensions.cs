@@ -1,9 +1,6 @@
 ﻿using AuthAPI.Core.Infrastructure.Headers;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace AuthAPI.Core
 {
@@ -11,19 +8,12 @@ namespace AuthAPI.Core
     {
         public static string ToAuthorizationHeader(this RequestPayload request)
         {
-            return Convert.ToBase64String(
-                                System.Text.Encoding.UTF8.GetBytes(
-                                    string.Concat(request.ClientId, "|",
-                                                  request.UserName, "|",
-                                                  request.Identifier, "|",
-                                                  request.RequestCount)
-                                                                   )
-                                          );
+            return Convert.ToBase64String(Encoding.UTF8.GetBytes(string.Concat(request.ClientId, "|",
+                                                                               request.UserName, "|",
+                                                                               request.Identifier, "|",
+                                                                               request.RequestCount)));
         }
 
-        public static ResponsePayload ToResponsePayload(this RequestPayload request)
-        {
-            return new ResponsePayload { Identifier = request.Identifier, RequestCount = request.RequestCount };
-        }
+        public static ResponsePayload ToResponsePayload(this RequestPayload request) => new ResponsePayload { Identifier = request.Identifier, RequestCount = request.RequestCount };
     }
 }
