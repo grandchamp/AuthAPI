@@ -10,6 +10,7 @@ using System;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Security.Claims;
 using System.Security.Principal;
 using System.Text;
 using System.Text.Encodings.Web;
@@ -72,10 +73,7 @@ namespace AuthAPI.Middlewares.Mvc
 
                         await _responseStore.UpdateResponse(newResponse.Identifier, newResponse);
 
-                        Context.User = new GenericPrincipal(new GenericIdentity(authHeader.Request.UserName),
-                                                            new string[] { });
-
-                        return AuthenticateResult.Success(new AuthenticationTicket(new GenericPrincipal(new GenericIdentity(authHeader.Request.UserName), new string[] { }),
+                        return AuthenticateResult.Success(new AuthenticationTicket(new GenericPrincipal(new ClaimsIdentity(new GenericIdentity(authHeader.Request.UserName)), new string[] { }),
                                                                                    new AuthenticationProperties(),
                                                                                    Scheme.Name));
                     }
