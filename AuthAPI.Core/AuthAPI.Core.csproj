@@ -2,6 +2,15 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Nicolas Grandchamp</Authors>
+    <Company />
+    <Description>This is the base package for AuthAPI. Contains the base AuthAPI stuff and a HttpClientHandler to integrate easily with HttpClient.
+This API auth works by generating a hash consisting of: client id, identifier (random GUID), request count (to prevent replay attacks), username, password (could be anything, there's no validation of password here), HTTP method, base64 of the body (even if it's a empty one) and the request URI. All of this are packed into a string and hashed with HMAC'd with SHA256.</Description>
+    <PackageProjectUrl>https://github.com/grandchamp/AuthAPI</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/grandchamp/AuthAPI</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <Product>AuthAPI</Product>
   </PropertyGroup>
 
   <ItemGroup>

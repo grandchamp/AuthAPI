@@ -134,7 +134,7 @@ namespace AuthAPI.Core.Handlers
                                      return response;
                                  }).Unwrap();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
