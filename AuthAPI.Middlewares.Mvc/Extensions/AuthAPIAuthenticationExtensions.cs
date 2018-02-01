@@ -1,4 +1,5 @@
 ﻿using AuthAPI.Core;
+using AuthAPI.Core.Builders;
 using AuthAPI.Core.Infrastructure;
 using AuthAPI.Core.Infrastructure.RequestStore;
 using AuthAPI.Core.Infrastructure.RequestStore.Contracts;
@@ -30,8 +31,16 @@ namespace Microsoft.Extensions.DependencyInjection
 
             builder.Services.AddScoped<IAuthStore, TAuthStore>();
             builder.Services.AddScoped<IResponseStore, TResponseStore>();
+            builder.Services.AddScoped<IPrincipalBuilder, PrincipalBuilder>();
 
             return builder.AddScheme<AuthAPIAuthenticationOptions, AuthAPIAuthenticationHandler>("AuthAPI", "AuthAPI", configureOptions);
+        }
+
+        public static AuthenticationBuilder UseIdentity(this AuthenticationBuilder builder)
+        {
+            builder.Services.PostConfigure<AuthAPIConfiguration>(options => options.UseIdentity = true);
+
+            return builder;
         }
     }
 }

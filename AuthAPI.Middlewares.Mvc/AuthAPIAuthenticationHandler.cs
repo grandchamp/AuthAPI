@@ -1,4 +1,5 @@
 ﻿using AuthAPI.Core;
+using AuthAPI.Core.Builders;
 using AuthAPI.Core.Infrastructure;
 using AuthAPI.Core.Infrastructure.Headers;
 using AuthAPI.Core.Infrastructure.RequestStore.Contracts;
@@ -9,9 +10,6 @@ using Microsoft.Extensions.Primitives;
 using System;
 using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Security.Claims;
-using System.Security.Principal;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -23,13 +21,15 @@ namespace AuthAPI.Middlewares.Mvc
         private readonly IAuthStore _authStore;
         private readonly IResponseStore _responseStore;
         private readonly IOptions<AuthAPIConfiguration> _authApiConfiguration;
+        private readonly IPrincipalBuilder _principalBuilder;
         public AuthAPIAuthenticationHandler(IAuthStore authStore, IResponseStore responseStore, IOptions<AuthAPIConfiguration> authApiConfiguration,
-                                            IOptionsMonitor<AuthAPIAuthenticationOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock)
+                                            IOptionsMonitor<AuthAPIAuthenticationOptions> options, IPrincipalBuilder principalBuilder, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock)
             : base(options, logger, encoder, clock)
         {
             _authStore = authStore;
             _responseStore = responseStore;
             _authApiConfiguration = authApiConfiguration;
+            _principalBuilder = principalBuilder;
         }
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
@@ -73,7 +73,7 @@ namespace AuthAPI.Middlewares.Mvc
 
                         await _responseStore.UpdateResponse(newResponse.Identifier, newResponse);
 
-                        return AuthenticateResult.Success(new AuthenticationTicket(new GenericPrincipal(new ClaimsIdentity(new GenericIdentity(authHeader.Request.UserName)), new string[] { }),
+                        return AuthenticateResult.Success(new AuthenticationTicket(_principalBuilder.BuildPrincipal(authHeader),
                                                                                    new AuthenticationProperties(),
                                                                                    Scheme.Name));
                     }
