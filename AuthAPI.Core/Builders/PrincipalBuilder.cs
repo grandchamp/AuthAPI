@@ -1,6 +1,7 @@
 ﻿using AuthAPI.Core.Infrastructure;
 using AuthAPI.Core.Infrastructure.Headers;
 using Microsoft.Extensions.Options;
+using System.Collections.Generic;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading.Tasks;
@@ -22,7 +23,7 @@ namespace AuthAPI.Core.Builders
             if (_authApiConfiguration.Value.UseIdentity)
                 return await _authStore.BuildClaimsPrincipalForIdentity(authHeader.Request.UserName);
             else
-                return new GenericPrincipal(new ClaimsIdentity(new GenericIdentity(authHeader.Request.UserName)), new string[] { });
+                return new ClaimsPrincipal(new List<ClaimsIdentity> { new ClaimsIdentity("AuthAPI") });
         }
     }
 }

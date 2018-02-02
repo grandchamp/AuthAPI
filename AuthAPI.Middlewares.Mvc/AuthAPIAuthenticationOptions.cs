@@ -7,6 +7,7 @@ namespace AuthAPI.Middlewares.Mvc
 {
     public class AuthAPIAuthenticationOptions : AuthenticationSchemeOptions
     {
-        public static string AuthenticationScheme => "AuthAPI";
+        public const string DefaultScheme = "AuthAPI";
+        public string Scheme => DefaultScheme;
     }
 }

@@ -9,17 +9,22 @@
     <Description>This is the integration package for MVC Core for AuthAPI.</Description>
     <PackageProjectUrl>https://github.com/grandchamp/AuthAPI</PackageProjectUrl>
     <RepositoryUrl>https://github.com/grandchamp/AuthAPI</RepositoryUrl>
-    <Version>1.1.1</Version>
-    <AssemblyVersion>1.1.1.0</AssemblyVersion>
-    <FileVersion>1.1.1.0</FileVersion>
+    <Version>1.1.2</Version>
+    <AssemblyVersion>1.1.2.0</AssemblyVersion>
+    <FileVersion>1.1.2.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="2.0.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\AuthAPI.Core\AuthAPI.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Attributes\" />
   </ItemGroup>
 
 </Project>

@@ -5,6 +5,7 @@ using AuthAPI.Core.Infrastructure.RequestStore;
 using AuthAPI.Core.Infrastructure.RequestStore.Contracts;
 using AuthAPI.Middlewares.Mvc;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using System;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -33,7 +34,7 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.AddScoped<IResponseStore, TResponseStore>();
             builder.Services.AddScoped<IPrincipalBuilder, PrincipalBuilder>();
 
-            return builder.AddScheme<AuthAPIAuthenticationOptions, AuthAPIAuthenticationHandler>("AuthAPI", "AuthAPI", configureOptions);
+            return builder.AddScheme<AuthAPIAuthenticationOptions, AuthAPIAuthenticationHandler>(AuthAPIAuthenticationOptions.DefaultScheme, configureOptions);
         }
 
         public static AuthenticationBuilder UseIdentity(this AuthenticationBuilder builder)

@@ -11,7 +11,7 @@ This API auth works by generating a hash consisting of: client id, identifier (r
     <RepositoryUrl>https://github.com/grandchamp/AuthAPI</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <Product>AuthAPI</Product>
-    <Version>1.1.1</Version>
+    <Version>1.1.2</Version>
   </PropertyGroup>
 
   <ItemGroup>

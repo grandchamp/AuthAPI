@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
+using Microsoft.Net.Http.Headers;
 using System;
 using System.Linq;
 using System.Net.Http;
@@ -34,7 +35,7 @@ namespace AuthAPI.Middlewares.Mvc
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
-            var authHeader = new AuthHeader(Context.Request.Headers.TryGetValue("Authorization", out StringValues value)
+            var authHeader = new AuthHeader(Context.Request.Headers.TryGetValue(HeaderNames.Authorization, out StringValues value)
                                                ? value.FirstOrDefault()
                                                : string.Empty,
                                             _responseStore);
@@ -50,7 +51,15 @@ namespace AuthAPI.Middlewares.Mvc
                     var expectedRequestPayload = authHeader.Request.Copy();
                     expectedRequestPayload.RequestCount = string.Format("{0:D8}", int.Parse(cachedResponseIdentifier.Response.RequestCount) + 1);
 
-                    var content = await Context.Request.ReadAsByteArrayAsync();
+                    byte[] content = new byte[] { };
+                    try
+                    {
+                        content = await Context.Request.ReadAsByteArrayAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                    }
+
                     var contentString = Encoding.UTF8.GetString(content);
 
                     var expectedAuthHeader = new AuthHeader
@@ -67,15 +76,16 @@ namespace AuthAPI.Middlewares.Mvc
                         }
                     };
 
-                    if (expectedAuthHeader.ToHMAC(clientSecret).Equals(Context.Request.Headers["Authorization"].FirstOrDefault().Split(':')[1]))
+                    if (expectedAuthHeader.ToHMAC(clientSecret).Equals(Context.Request.Headers[HeaderNames.Authorization].FirstOrDefault().Split(':')[1]))
                     {
                         var newResponse = authHeader.Request.ToResponsePayload();
 
                         await _responseStore.UpdateResponse(newResponse.Identifier, newResponse);
 
-                        return AuthenticateResult.Success(new AuthenticationTicket(await _principalBuilder.BuildPrincipal(authHeader),
-                                                                                   new AuthenticationProperties(),
-                                                                                   Scheme.Name));
+                        var principal = await _principalBuilder.BuildPrincipal(authHeader);
+
+                        return AuthenticateResult.Success(new AuthenticationTicket(principal,
+                                                                                   AuthAPIAuthenticationOptions.DefaultScheme));
                     }
                 }
             }
@@ -88,7 +98,7 @@ namespace AuthAPI.Middlewares.Mvc
                     RequestCount = string.Format("{0:D8}", 0)
                 };
 
-                Context.Response.Headers.Add("WWW-Authenticate", $"AuthAPI {responsePayload.ToBase64()}");
+                Context.Response.Headers.Add(HeaderNames.WWWAuthenticate, $"AuthAPI {responsePayload.ToBase64()}");
 
                 await _responseStore.StoreResponse(responsePayload, DateTime.Now.AddMilliseconds(_authApiConfiguration.Value.TokenExpirationMiliseconds));
             });
