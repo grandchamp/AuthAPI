@@ -20,6 +20,7 @@ namespace AuthAPI.Samples.Mvc
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
+                .UseIISIntegration()
                 .Build();
     }
 }

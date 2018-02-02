@@ -9,6 +9,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Microsoft.Net.Http.Headers;
 using System;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -54,13 +55,12 @@ namespace AuthAPI.Middlewares.Mvc
                     byte[] content = new byte[] { };
                     try
                     {
-                        content = await Context.Request.ReadAsByteArrayAsync();
+                        var body = await new StreamReader(Request.Body).ReadToEndAsync();
+                        content = Encoding.ASCII.GetBytes(body);
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                     }
-
-                    var contentString = Encoding.UTF8.GetString(content);
 
                     var expectedAuthHeader = new AuthHeader
                     {
